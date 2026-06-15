@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controllers;
@@ -31,11 +32,33 @@ class JournalController
             $resource === 'notes' && $method === 'DELETE' && $id   => $this->noteDelete($user, $id),
 
             // ── /api/journal ──────────────────────────────────────────────
+            $method === 'GET' && $action === 'history' => $this->history($user),
             $method === 'GET'  => $this->get($user),
             $method === 'POST' => $this->save($user, $body),
 
             default => Response::error('Route journal inconnue.', 404),
         };
+    }
+
+    // GET /api/journal/history?limit=30
+    private function history(array $user): void
+    {
+        $limit = min((int)($_GET['limit'] ?? 30), 90);
+
+        $stmt = Database::get()->prepare(
+            'SELECT entry_date AS date,
+                LENGTH(content)          AS char_count,
+                LEFT(content, 120)       AS preview
+         FROM m_w_journal_entries
+         WHERE user_id = ?
+         ORDER BY entry_date DESC
+         LIMIT ?'
+        );
+        $stmt->execute([$user['id'], $limit]);
+
+        Response::json([
+            'entries' => $stmt->fetchAll(\PDO::FETCH_ASSOC),
+        ]);
     }
 
     // ── Journal quotidien ──────────────────────────────────────────────────────
@@ -154,7 +177,7 @@ class JournalController
         $params[] = $id;
         $params[] = $user['id'];
         $db->prepare('UPDATE m_w_notes SET ' . implode(', ', $fields) . ' WHERE id = ? AND user_id = ?')
-           ->execute($params);
+            ->execute($params);
 
         $stmt = $db->prepare('SELECT * FROM m_w_notes WHERE id = ? LIMIT 1');
         $stmt->execute([$id]);
