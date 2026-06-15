@@ -26,7 +26,7 @@ function StatCard({ icon, value, label }) {
 function ActiveBlock({ block }) {
   if (!block) return null
   return (
-    <div className="glass rounded-3xl p-4">
+    <div className="glass rounded-3xl" style={{ padding: '16px' }}>
       <Label>Bloc actif</Label>
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
@@ -37,8 +37,8 @@ function ActiveBlock({ block }) {
           <p className="text-base font-semibold" style={{ color: 'var(--text)' }}>{block.name}</p>
           <p className="text-xs" style={{ color: 'var(--muted)' }}>{block.time_start?.slice(0,5)} – {block.time_end?.slice(0,5)}</p>
         </div>
-        <span className="text-xs font-semibold px-3 py-1 rounded-full"
-          style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>En cours</span>
+        <span className="text-xs font-semibold px-3 py-1 rounded-lg"
+          style={{ background: 'var(--accent-bg)', color: 'var(--accent)', padding: '4px 12px' }}>En cours</span>
       </div>
     </div>
   )
@@ -53,11 +53,11 @@ function BlocksTimeline({ blocks }) {
     pending: 'rgba(161,161,170,0.15)',
   }
   return (
-    <div className="glass rounded-3xl p-4">
+    <div className="glass rounded-3xl" style={{ padding: '16px' }}>
       <Label>Blocs du jour</Label>
       <div className="flex gap-2 items-end">
         {blocks.map(b => (
-          <div key={b.id} className="flex-1 flex flex-col items-center gap-1.5">
+          <div key={b.block_id} className="flex-1 flex flex-col items-center gap-1.5">
             <div className="w-full rounded-xl relative"
               style={{
                 height: '48px',
@@ -166,7 +166,7 @@ export default function Dashboard() {
 
       {/* Vision */}
       {data?.vision && (
-        <div className="glass rounded-3xl p-4">
+        <div className="glass rounded-xl" style={{ padding: '16px' }}>
           <Label>Ta vision</Label>
           <p className="text-sm leading-relaxed italic" style={{ color: 'var(--text2)' }}>
             "{data.vision}"
@@ -189,7 +189,7 @@ export default function Dashboard() {
 
       {/* Projets */}
       {data?.projects?.length > 0 && (
-        <div className="glass rounded-3xl p-4">
+        <div className="glass rounded-3xl" style={{ padding: '16px' }}>
           <Label>Projets</Label>
           <div className="space-y-3">
             {data.projects.map(p => <ProjectRow key={p.id} project={p} />)}
@@ -198,7 +198,7 @@ export default function Dashboard() {
       )}
 
       {/* Santé */}
-      <div className="glass rounded-3xl p-4" >
+      <div className="glass rounded-3xl" style={{ padding: '16px' }}>
         <Label>Santé aujourd'hui</Label>
         <div className="flex gap-2">
           <HealthBtn icon={Moon}     label="Sommeil" active={data?.health?.sleep_ok}    color="#7B6FD0" />
@@ -209,7 +209,7 @@ export default function Dashboard() {
 
       {/* Citation */}
       {data?.quote && (
-        <div className="glass rounded-3xl p-5 text-center">
+        <div className="glass rounded-3xl p-5 text-center" >
           <p className="text-sm italic leading-relaxed" style={{ color: 'var(--text2)' }}>
             "{data.quote.text}"
           </p>
