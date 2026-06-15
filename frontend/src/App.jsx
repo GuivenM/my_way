@@ -3,9 +3,9 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/Layout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-// import Schedule from './pages/Schedule'
-// import Journal from './pages/Journal'
-// import Vision from './pages/Vision'
+import Schedule from './pages/Schedule'
+import Journal from './pages/Journal'
+import Vision from './pages/Vision'
 // import Projects from './pages/Projects'
 // import Books from './pages/Books'
 // import Stats from './pages/Stats'
@@ -32,10 +32,10 @@ function PrivateRoutes() {
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/journal"  element={<Journal />} />
         <Route path="/vision"   element={<Vision />} />
-        <Route path="/projects" element={<Projects />} />
+        {/* <Route path="/projects" element={<Projects />} />
         <Route path="/books"    element={<Books />} />
         <Route path="/stats"    element={<Stats />} />
-        <Route path="/more"     element={<More />} />
+        <Route path="/more"     element={<More />} /> */}
         <Route path="*"         element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

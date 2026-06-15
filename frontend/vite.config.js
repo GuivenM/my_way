@@ -42,7 +42,12 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': { target: 'http://localhost:8000', changeOrigin: true }
+      '/api': { target: 'http://localhost:8000/my_way', changeOrigin: true }
     }
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: true,
   }
 })
