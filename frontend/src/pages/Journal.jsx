@@ -48,8 +48,8 @@ export default function Journal() {
   const next = () => { const n = new Date(d); n.setDate(n.getDate()+1); setDate(n.toISOString().split('T')[0]) }
 
   return (
-    <div className="px-4 w-full max-w-lg mx-auto" style={{ paddingTop: '24px' }}>
-      <div className="flex items-center justify-between mb-1">
+    <div className="px-4 w-full max-w-lg mx-auto" style={{ padding: '16px' }}>
+      <div className="flex items-center justify-between mb-1" style={{ marginBottom: '8px' }}>
         <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>Journal</h1>
         <span className="text-xs font-medium"
           style={{ color: saving ? 'var(--muted)' : saved ? 'var(--done)' : 'var(--partial)' }}>
@@ -61,12 +61,14 @@ export default function Journal() {
       <div className="flex gap-2 mb-5 mt-4">
         {[{ id: 'write', label: 'Écrire' }, { id: 'list', label: 'Entrées' }].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className="px-4 py-1.5 rounded-full text-sm font-semibold transition"
+            className="px-4 py-1.5 rounded-lg text-sm font-semibold transition"
             style={{
               background: tab === t.id ? 'var(--accent)' : 'var(--bg2)',
               color: tab === t.id ? 'white' : 'var(--muted)',
               boxShadow: tab === t.id ? '0 4px 12px rgba(123,111,208,0.25)' : 'none',
               border: 'var(--glass-border)',
+              marginBottom: '8px',
+              padding: '1.5px 3px',
             }}>
             {t.label}
           </button>
@@ -77,10 +79,10 @@ export default function Journal() {
         <>
           {/* Nav date */}
           <div className="glass rounded-3xl p-3 flex items-center justify-between mb-4">
-            <button onClick={prev} className="p-2 rounded-2xl" style={{ background: 'var(--bg3)' }}>
+            <button onClick={prev} className="p-2 rounded-2xl" style={{ background: 'var(--bg3)', padding: '16px'}}>
               <ChevronLeft size={16} style={{ color: 'var(--muted)' }} />
             </button>
-            <div className="text-center">
+            <div className="text-center" style={{ color: 'var(--text)' }}>
               <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
                 {d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
               </p>
@@ -93,7 +95,7 @@ export default function Journal() {
           </div>
 
           {/* Prompts */}
-          <div className="glass rounded-3xl p-4 mb-4">
+          <div className="glass rounded-2xl" style={{ padding: '16px', marginTop: '12px' }}>
             <Label>Prompts</Label>
             {PROMPTS.map((p, i) => (
               <p key={i} className="text-xs mb-1" style={{ color: 'var(--text2)' }}>· {p}</p>
@@ -101,7 +103,7 @@ export default function Journal() {
           </div>
 
           {/* Textarea */}
-          <div className="glass rounded-3xl p-1">
+          <div className="glass rounded-xl p-1" style={{ padding: '8px', marginTop: '12px' }}>
             <textarea value={content} onChange={e => handleChange(e.target.value)}
               placeholder="Commence à écrire…"
               className="w-full min-h-56 p-4 text-sm leading-relaxed resize-none outline-none rounded-3xl"

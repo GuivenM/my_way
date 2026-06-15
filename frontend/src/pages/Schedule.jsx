@@ -23,12 +23,12 @@ function BlockCard({ block, onUpdate }) {
   }
 
   return (
-    <div className="glass rounded-3xl p-4 transition-all"
-      style={{ border: block.is_current ? '1px solid rgba(123,111,208,0.35)' : undefined }}>
+    <div className="glass rounded-xl p-4 transition-all"
+      style={{ border: block.is_current ? '1px solid rgba(123,111,208,0.35)' : undefined, padding: '16px', marginBottom: '12px' }}>
       <div className="flex items-start justify-between mb-3">
         <div>
           {block.is_current && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full mr-2"
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg mr-2"
               style={{ background: 'var(--accent)', color: 'white' }}>MAINTENANT</span>
           )}
           <p className="text-base font-semibold mt-0.5" style={{ color: 'var(--text)' }}>{block.name}</p>
@@ -36,7 +36,7 @@ function BlockCard({ block, onUpdate }) {
             {block.time_start?.slice(0,5)} – {block.time_end?.slice(0,5)}
           </p>
         </div>
-        <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-lg"
           style={{ background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
       </div>
 
@@ -111,22 +111,23 @@ const handleUpdate = async (blockId, status) => {
   const done = blocks.filter(b => b.status === 'done').length
 
   return (
-    <div className="px-4 w-full max-w-lg mx-auto" style={{ paddingTop: '24px' }}>
+    <div className="px-4 w-full max-w-lg mx-auto" style={{ padding: '16px' }}>
       <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>Emploi du temps</h1>
-      <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>
+      <p className="text-sm" style={{ color: 'var(--muted)', marginBottom: '6px' }}>
         {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
       </p>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-5">
+      <div className="flex gap-2 mb-5" style={{ marginBottom: '8px' }}>
         {[{ id: 'today', label: "Aujourd'hui" }, { id: 'history', label: 'Historique' }].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className="px-4 py-1.5 rounded-full text-sm font-semibold transition"
+            className="px-4 py-5 rounded-sm text-sm font-semibold transition"
             style={{
               background: tab === t.id ? 'var(--accent)' : 'var(--bg2)',
               color:      tab === t.id ? 'white' : 'var(--muted)',
               boxShadow:  tab === t.id ? '0 4px 12px rgba(123,111,208,0.25)' : 'none',
               border:     'var(--glass-border)',
+              padding: '1.5px 4px',
             }}>
             {t.label}
           </button>
@@ -136,7 +137,7 @@ const handleUpdate = async (blockId, status) => {
       {tab === 'today' ? (
         <>
           {/* Barre de progression globale */}
-          <div className="glass rounded-3xl p-4 mb-4 flex items-center gap-4">
+          <div className="glass rounded-xl p-4 mb-4 flex items-center gap-4" style={{ padding: '16px', marginBottom: '12px' }}>
             <div className="text-center">
               <p className="text-2xl font-bold" style={{ color: 'var(--accent)' }}>{done}</p>
               <p className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--muted)' }}>Faits</p>
@@ -162,10 +163,10 @@ const handleUpdate = async (blockId, status) => {
           </div>
         </>
       ) : (
-        <div className="glass rounded-3xl p-4">
+        <div className="glass rounded-xl p-4" style={{ padding: '16px' }}>
           <Label>14 derniers jours</Label>
           {history.length === 0
-            ? <p className="text-sm text-center py-6" style={{ color: 'var(--muted)' }}>Pas encore d'historique</p>
+            ? <p className="text-sm text-center py-6" style={{ color: 'var(--muted)', marginBottom: '12px' }}>Pas encore d'historique</p>
             : history.map(e => <HistoryBar key={e.log_date} entry={e} />)
           }
         </div>

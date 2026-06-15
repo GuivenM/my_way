@@ -27,7 +27,7 @@ const STATUS_ORDER = ['reading', 'to_read', 'paused', 'done', 'abandoned']
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function Label({ children }) {
-  return <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>{children}</p>
+  return <p className="text-[11px] font-bold uppercase tracking-widest " style={{ color: 'var(--accent)', marginBottom: '8px' }}>{children}</p>
 }
 
 function StatusBadge({ status }) {
@@ -35,7 +35,7 @@ function StatusBadge({ status }) {
   const Icon = cfg.icon
   return (
     <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-      style={{ background: cfg.bg, color: cfg.color }}>
+      style={{ background: cfg.bg, color: cfg.color, }}>
       <Icon size={9} strokeWidth={2.5} />{cfg.label}
     </span>
   )
@@ -47,8 +47,8 @@ function BookRow({ book, onStatusChange }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="rounded-2xl overflow-hidden transition-all"
-      style={{ background: 'var(--bg3)', border: 'var(--glass-border)' }}>
+    <div className="rounded-lg overflow-hidden transition-all"
+      style={{ background: 'var(--bg3)', border: 'var(--glass-border)', padding: '8px', marginBottom: '6px' }}>
       {/* Header */}
       <button className="w-full flex items-start gap-3 p-3 text-left"
         onClick={() => setOpen(o => !o)}>
@@ -96,7 +96,7 @@ function PhaseCard({ phase, books, onStatusChange }) {
   const [collapsed, setCollapsed] = useState(phase.id > 2)
 
   return (
-    <div className="glass rounded-3xl overflow-hidden">
+    <div className="glass rounded-xl overflow-hidden" style={{padding: '8px', marginTop: '12px' }}>
       {/* Phase header */}
       <button className="w-full flex items-center gap-3 p-4 text-left"
         onClick={() => setCollapsed(c => !c)}>
@@ -243,7 +243,7 @@ export default function Books() {
   const unphased = filtered.filter(b => !b.phase)
 
   return (
-    <div className="px-4 w-full max-w-lg mx-auto" style={{ paddingTop: '24px', paddingBottom: '120px' }}>
+    <div className="px-4 w-full max-w-lg mx-auto" style={{padding: '16px'}}>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
@@ -264,7 +264,7 @@ export default function Books() {
       </div>
 
       {/* Filtres */}
-      <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
+      <div className="flex gap-2 overflow-x-auto">
         {[
           { id: 'all',     label: 'Tous' },
           { id: 'reading', label: 'En cours' },
@@ -279,6 +279,8 @@ export default function Books() {
               color:      filter === f.id ? 'white' : 'var(--muted)',
               boxShadow:  filter === f.id ? '0 4px 12px rgba(123,111,208,0.25)' : 'none',
               border:     'var(--glass-border)',
+              padding: '2px 6px',
+              marginTop: '8px',
             }}>
             {f.label}
           </button>

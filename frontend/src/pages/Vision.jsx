@@ -57,9 +57,9 @@ const handleVisionChange = (val) => {
   const filtered = goals.filter(g => g.horizon === horizon)
 
   return (
-    <div className="px-4 w-full max-w-lg mx-auto" style={{ paddingTop: '24px' }}>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>Vision & Objectifs</h1>
+    <div className="px-4 w-full max-w-lg mx-auto" style={{ padding: '16px' }}>
+      <div className="flex items-center justify-between mb-4" style={{ marginBottom: '8px' }}>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--text)', }}>Vision & Objectifs</h1>
         {tab === 'vision' && (
           <span className="text-xs font-medium" style={{ color: saved ? 'var(--done)' : 'var(--partial)' }}>
             {saved ? '✓' : '●'}
@@ -77,6 +77,8 @@ const handleVisionChange = (val) => {
               color: tab === t.id ? 'white' : 'var(--muted)',
               boxShadow: tab === t.id ? '0 4px 12px rgba(123,111,208,0.25)' : 'none',
               border: 'var(--glass-border)',
+              padding: '1.5px 3px',
+              marginBottom: '8px',
             }}>
             {t.label}
           </button>
@@ -88,31 +90,33 @@ const handleVisionChange = (val) => {
           <p className="text-xs" style={{ color: 'var(--muted)' }}>
             Ce texte s'affiche sur ton dashboard chaque jour.
           </p>
-          <div className="glass rounded-3xl p-1">
+          <div className="glass rounded-3xl p-1" style={{ margin: '8px 0' }}>
             <textarea value={vision} onChange={e => handleVisionChange(e.target.value)}
               placeholder="Je construis…"
-              className="w-full min-h-44 p-4 text-sm leading-relaxed resize-none outline-none rounded-3xl"
-              style={{ background: 'transparent', color: 'var(--text)' }} />
+              className="w-full min-h-40 p-4 text-sm leading-relaxed resize-none outline-none rounded-3xl"
+              style={{ background: 'transparent', color: 'var(--text)', }} />
           </div>
           {vision && (
-            <div className="glass rounded-3xl p-4">
+            <div className="glass rounded-xl p-4" style={{padding: '8px'}}>
               <Label>Aperçu dashboard</Label>
-              <p className="text-sm leading-relaxed italic" style={{ color: 'var(--text2)' }}>"{vision}"</p>
+              <p className="text-sm leading-relaxed italic" style={{ color: 'var(--text2)', }}>"{vision}"</p>
             </div>
           )}
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4" style={{ marginTop: '8px' }}>
           {/* Horizon pills */}
           <div className="flex gap-2 flex-wrap">
             {HORIZONS.map(h => (
               <button key={h.id} onClick={() => setHorizon(h.id)}
-                className="px-3 py-1.5 rounded-full text-xs font-semibold transition"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition"
                 style={{
                   background: horizon === h.id ? 'var(--accent)' : 'var(--bg2)',
                   color: horizon === h.id ? 'white' : 'var(--muted)',
                   boxShadow: horizon === h.id ? '0 4px 12px rgba(123,111,208,0.25)' : 'none',
                   border: 'var(--glass-border)',
+                  padding: '1.5px 8px',
+                  marginBottom: '8px',
                 }}>
                 {h.label}
               </button>
@@ -124,34 +128,36 @@ const handleVisionChange = (val) => {
             <input value={newGoal} onChange={e => setNewGoal(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleAdd()}
               placeholder={`Objectif à ${HORIZONS.find(h=>h.id===horizon)?.label}…`}
-              className="flex-1 px-4 py-2.5 rounded-2xl text-sm outline-none glass"
-              style={{ color: 'var(--text)' }} />
+              className="flex-1 px-4 py-2.5 rounded-lg text-sm outline-none glass"
+              style={{ color: 'var(--text)', padding: '8px 16px' }} />
             <button onClick={handleAdd}
-              className="px-4 py-2.5 rounded-2xl"
-              style={{ background: 'var(--accent)', color: 'white', boxShadow: '0 4px 12px rgba(123,111,208,0.3)' }}>
+              className="px-4 py-2.5 rounded-full"
+              style={{ background: 'var(--accent)', color: 'white', boxShadow: '0 4px 12px rgba(123,111,208,0.3)', margin: '8px 0' }}>
               <Plus size={16} />
             </button>
           </div>
 
           {/* Liste */}
-          <div className="space-y-2">
+          <div className="space-y-2" style={{ marginTop: '8px' }}>
             {filtered.length === 0
               ? <p className="text-sm text-center py-8" style={{ color: 'var(--muted)' }}>
                   Aucun objectif à {HORIZONS.find(h=>h.id===horizon)?.label}
                 </p>
               : filtered.map(g => (
-                  <div key={g.id} className="glass-inner flex items-start gap-3 px-4 py-3 rounded-2xl group">
+                  <div key={g.id} className="glass-inner flex items-start gap-3 px-4 py-3 rounded-2xl group" style={{ padding: '4px',
+                        marginTop: '8px', width: '92%' }}>
                     <button onClick={() => handleToggle(g)}
                       className="mt-0.5 w-5 h-5 rounded-lg border-2 flex-shrink-0 flex items-center justify-center transition"
                       style={{
                         borderColor: g.status === 'done' ? 'var(--done)' : 'rgba(123,111,208,0.3)',
                         background:  g.status === 'done' ? 'var(--done)' : 'transparent',
+                       
                       }}>
                       {g.status === 'done' && <Check size={11} color="white" strokeWidth={3} />}
                     </button>
                     <p className="flex-1 text-sm leading-relaxed"
                       style={{ color: g.status === 'done' ? 'var(--muted)' : 'var(--text)',
-                               textDecoration: g.status === 'done' ? 'line-through' : 'none' }}>
+                               textDecoration: g.status === 'done' ? 'line-through' : 'none',}}>
                       {g.title}
                     </p>
                     <button onClick={() => handleDelete(g.id)}

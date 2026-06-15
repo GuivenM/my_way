@@ -24,17 +24,17 @@ export default function More() {
   const upcoming = modules.filter(m => !m.active)
 
   return (
-    <div className="px-4 pt-8 pb-32 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--text)' }}>Configuration</h1>
+    <div className="px-4 pt-8 pb-32 max-w-lg mx-auto" style={{padding: '16px'}}>
+      <h1 className="text-2xl font-bold" style={{ color: 'var(--text)', marginBottom: '12px' }}>Configuration</h1>
 
       {active.length > 0 && (
-        <div className="glass rounded-3xl p-4 mb-4">
+        <div className="glass rounded-3xl p-4 mb-4" style={{ padding: '16px', marginBottom: '12px' }}>
           <Label>Disponible</Label>
-          <div className="space-y-1">
+          <div className="space-y-1" s>
             {active.map(m => (
               <button key={m.to} onClick={() => navigate(m.to)}
                 className="w-full flex items-center gap-3 py-3 px-2 rounded-2xl text-left transition"
-                style={{ background: 'transparent' }}
+                style={{ background: 'transparent', marginTop: '8px', padding: '4px 6px', border: 'var(--glass-border)' }}
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--bg3)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -52,13 +52,13 @@ export default function More() {
         </div>
       )}
 
-      <div className="glass rounded-3xl p-4 mb-4">
+      <div className="glass rounded-3xl p-4 mb-4" style={{ padding: '16px' }}>
         <Label>Prochaines phases</Label>
-        <div className="space-y-1">
+        <div className="space-y-1" >
           {upcoming.map(m => (
             <div key={m.to} className="flex items-center gap-3 py-3 px-2 opacity-50">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'var(--bg4)' }}>
+                style={{ marginTop: '8px', padding: '4px 6px', background: 'var(--bg4)' }}>
                 <m.icon size={17} style={{ color: 'var(--muted)' }} />
               </div>
               <div className="flex-1 min-w-0">
@@ -74,7 +74,7 @@ export default function More() {
 
       <button onClick={logout}
         className="w-full py-3 rounded-2xl text-sm font-semibold"
-        style={{ background: 'var(--skip-bg)', color: 'var(--skip)', border: '1px solid rgba(248,113,113,0.2)' }}>
+        style={{ background: 'var(--skip-bg)', color: 'var(--skip)', border: '1px solid rgba(248,113,113,0.2)', marginTop: '16px', padding: '4px 8px' }}>
         Déconnexion
       </button>
     </div>
