@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../src/**/*.{js,jsx}";
 
 :root {
   /* Base */
@@ -6,6 +7,8 @@
   --bg2:       rgba(245, 243, 255, 0.6);   /* card principale — violet très pâle, semi-transparent */
   --bg3:       rgba(237, 234, 255, 0.5);   /* card imbriquée */
   --bg4:       rgba(228, 224, 255, 0.4);   /* hover / pill */
+
+   --nav-h: 64px; /* hauteur visuelle de la navbar */
 
   /* Glassmorphism */
   --glass-blur:   blur(16px);
@@ -45,6 +48,8 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100dvh;
+  /* Safe area top pour le body */
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* Utilitaires glass */

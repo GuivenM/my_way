@@ -24,11 +24,12 @@ $id       = isset($segments[1]) && is_numeric($segments[1]) ? (int)$segments[1] 
 $action   = $id ? ($segments[2] ?? null) : ($segments[1] ?? null);
 
 // Corps JSON de la requête
+// Corps JSON de la requête
 $body = [];
 $raw  = file_get_contents('php://input');
 if ($raw) {
     $decoded = json_decode($raw, true);
-    if (json_last_error() === JSON_ERROR_NONE) $body = $decoded;
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) $body = $decoded;
 }
 
 // ---------------------------------------------------------------

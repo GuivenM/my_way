@@ -142,7 +142,7 @@ export default function Dashboard() {
   const blocksTotal = data?.blocks_total ?? 7
 
   return (
-    <div className="px-4 pt-8 pb-32 space-y-4 max-w-lg mx-auto">
+    <div className="px-4 max-w-lg mx-auto" style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
       {/* Orbe déco */}
       <div style={{
@@ -152,7 +152,7 @@ export default function Dashboard() {
       }} />
 
       {/* Header */}
-      <div className="mb-2">
+      <div className="mb-8" >
         <p className="text-[11px] font-bold tracking-widest" style={{ color: 'var(--muted)' }}>{dateStr}</p>
         <h1 className="text-3xl font-bold mt-0.5" style={{ color: 'var(--text)' }}>
           {greeting}, {user?.username ?? 'toi'}.
@@ -198,7 +198,7 @@ export default function Dashboard() {
       )}
 
       {/* Santé */}
-      <div className="glass rounded-3xl p-4">
+      <div className="glass rounded-3xl p-4" >
         <Label>Santé aujourd'hui</Label>
         <div className="flex gap-2">
           <HealthBtn icon={Moon}     label="Sommeil" active={data?.health?.sleep_ok}    color="#7B6FD0" />

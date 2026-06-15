@@ -93,14 +93,14 @@ export default function Schedule() {
   }, [])
 
   const handleUpdate = async (id, status) => {
-    setBlocks(p => p.map(b => b.id === id ? { ...b, status } : b))
+    setBlocks(p => p.map(b => b.block_id === id ? { ...b, status } : b))
     await blocksApi.setStatus(id, status)
   }
 
   const done = blocks.filter(b => b.status === 'done').length
 
   return (
-    <div className="px-4 pt-8 pb-32 max-w-lg mx-auto">
+    <div className="px-4 w-full max-w-lg mx-auto" style={{ paddingTop: '24px' }}>
       <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>Emploi du temps</h1>
       <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>
         {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}

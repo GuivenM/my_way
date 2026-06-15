@@ -9,7 +9,7 @@ import Vision from './pages/Vision'
 // import Projects from './pages/Projects'
 // import Books from './pages/Books'
 // import Stats from './pages/Stats'
-// import More from './pages/More'
+import More from './pages/More'
 
 function PrivateRoutes() {
   const { user, loading } = useAuth()
@@ -32,10 +32,10 @@ function PrivateRoutes() {
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/journal"  element={<Journal />} />
         <Route path="/vision"   element={<Vision />} />
-        {/* <Route path="/projects" element={<Projects />} />
+        {/* {/* <Route path="/projects" element={<Projects />} />
         <Route path="/books"    element={<Books />} />
-        <Route path="/stats"    element={<Stats />} />
-        <Route path="/more"     element={<More />} /> */}
+        <Route path="/stats"    element={<Stats />} /> */}
+        <Route path="/more"     element={<More />} />
         <Route path="*"         element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

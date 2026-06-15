@@ -26,30 +26,30 @@ export default function Vision() {
     visionApi.get().then(d => { setVision(d.vision_text || ''); setGoals(Object.values(d.goals).flat()) })
   }, [])
 
-  const doSave = useDebounce(async (text) => { await visionApi.saveVision(text); setSaved(true) }, 1500)
+  const doSave = useDebounce(async (text) => { await visionApi.updateText(text); setSaved(true) }, 1500)
   const handleVisionChange = (val) => { setVision(val); setSaved(false); doSave(val) }
 
   const handleAdd = async () => {
     if (!newGoal.trim()) return
-    const data = await visionApi.saveGoal({ title: newGoal.trim(), horizon, status: 'active' })
-    setGoals(p => [...p, data.goal]); setNewGoal('')
+    const data = await visionApi.goals.create({ title: newGoal.trim(), horizon, status: 'active' })
+    setGoals(p => [...p, data])
   }
 
   const handleToggle = async (goal) => {
     const next = { ...goal, status: goal.status === 'done' ? 'active' : 'done' }
     setGoals(p => p.map(g => g.id === goal.id ? next : g))
-    await visionApi.updateGoal(next)
+    await visionApi.goals.update(next.id, next)
   }
 
   const handleDelete = async (id) => {
     setGoals(p => p.filter(g => g.id !== id))
-    await visionApi.deleteGoal(id)
+    await visionApi.goals.delete(id)
   }
 
   const filtered = goals.filter(g => g.horizon === horizon)
 
   return (
-    <div className="px-4 pt-8 pb-32 max-w-lg mx-auto">
+    <div className="px-4 w-full max-w-lg mx-auto" style={{ paddingTop: '24px' }}>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>Vision & Objectifs</h1>
         {tab === 'vision' && (

@@ -28,7 +28,7 @@ export default function Journal() {
   }, [date])
 
   useEffect(() => {
-    if (tab === 'list') journalApi.get(30).then(d => setEntries(d.entries || []))
+    if (tab === 'list') journalApi.history(30).then(d => setEntries(d.entries || []))
   }, [tab])
 
   const doSave = useCallback(async (text) => {
@@ -48,7 +48,7 @@ export default function Journal() {
   const next = () => { const n = new Date(d); n.setDate(n.getDate()+1); setDate(n.toISOString().split('T')[0]) }
 
   return (
-    <div className="px-4 pt-8 pb-32 max-w-lg mx-auto">
+    <div className="px-4 w-full max-w-lg mx-auto" style={{ paddingTop: '24px' }}>
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>Journal</h1>
         <span className="text-xs font-medium"
