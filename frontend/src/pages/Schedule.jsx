@@ -19,7 +19,7 @@ function BlockCard({ block, onUpdate }) {
 
   const handle = async (status) => {
     setSaving(true)
-    try { await onUpdate(block.id, status) } finally { setSaving(false) }
+    try { await onUpdate(block.block_id, status) } finally { setSaving(false) }
   }
 
   return (
@@ -62,15 +62,15 @@ function BlockCard({ block, onUpdate }) {
 }
 
 function HistoryBar({ entry }) {
-  const done  = entry.blocks.filter(b => b.status === 'done').length
-  const total = entry.blocks.length
+  const done  = Number(entry.done)
+  const total = Number(entry.total)
   const pct   = Math.round((done / total) * 100)
   const color = pct >= 70 ? 'var(--done)' : pct >= 40 ? 'var(--partial)' : 'var(--skip)'
 
   return (
     <div className="flex items-center gap-3 py-1.5">
       <span className="text-xs w-24 flex-shrink-0" style={{ color: 'var(--muted)' }}>
-        {new Date(entry.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+        {new Date(entry.log_date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
       </span>
       <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg4)' }}>
         <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
@@ -88,14 +88,25 @@ export default function Schedule() {
 
   useEffect(() => {
     Promise.all([blocksApi.today(), blocksApi.history(14)])
-      .then(([t, h]) => { setBlocks(t.blocks || []); setHistory(h.history || []) })
+      .then(([t, h]) => { setBlocks(t.blocks || []); setHistory(h.days || []) })
       .catch(console.error).finally(() => setLoading(false))
   }, [])
 
-  const handleUpdate = async (id, status) => {
-    setBlocks(p => p.map(b => b.block_id === id ? { ...b, status } : b))
-    await blocksApi.setStatus(id, status)
+const handleUpdate = async (blockId, status) => {
+  // Optimistic update
+  setBlocks(p => p.map(b => b.block_id === blockId ? { ...b, status } : b))
+
+  // Initialiser le jour si pas encore fait
+  const block = blocks.find(b => b.block_id === blockId)
+  if (!block.log_id) {
+    const fresh = await blocksApi.initDay()
+    setBlocks(fresh.blocks)
+    const log = fresh.blocks.find(b => b.block_id === blockId)
+    if (log?.log_id) await blocksApi.setStatus(log.log_id, status)
+  } else {
+    await blocksApi.setStatus(block.log_id, status)
   }
+}
 
   const done = blocks.filter(b => b.status === 'done').length
 
@@ -146,7 +157,7 @@ export default function Schedule() {
               ? Array(7).fill(0).map((_, i) => (
                   <div key={i} className="h-24 rounded-3xl animate-pulse" style={{ background: 'var(--bg2)' }} />
                 ))
-              : blocks.map(b => <BlockCard key={b.id} block={b} onUpdate={handleUpdate} />)
+              : blocks.map(b => <BlockCard key={b.block_id} block={b} onUpdate={handleUpdate} />)
             }
           </div>
         </>
@@ -155,7 +166,7 @@ export default function Schedule() {
           <Label>14 derniers jours</Label>
           {history.length === 0
             ? <p className="text-sm text-center py-6" style={{ color: 'var(--muted)' }}>Pas encore d'historique</p>
-            : history.map(e => <HistoryBar key={e.date} entry={e} />)
+            : history.map(e => <HistoryBar key={e.log_date} entry={e} />)
           }
         </div>
       )}

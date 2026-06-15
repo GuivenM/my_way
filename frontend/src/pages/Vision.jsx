@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { visionApi } from '../api'
 import { useDebounce } from '../hooks/useDebounce'
 import { Plus, Trash2, Check } from 'lucide-react'
@@ -26,8 +26,13 @@ export default function Vision() {
     visionApi.get().then(d => { setVision(d.vision_text || ''); setGoals(Object.values(d.goals).flat()) })
   }, [])
 
-  const doSave = useDebounce(async (text) => { await visionApi.updateText(text); setSaved(true) }, 1500)
-  const handleVisionChange = (val) => { setVision(val); setSaved(false); doSave(val) }
+const doSave = useCallback(async (text) => {
+  await visionApi.updateText({ vision_text: text })
+  setSaved(true)
+}, [])
+
+const debouncedSave = useDebounce(doSave, 1500)
+const handleVisionChange = (val) => { setVision(val); setSaved(false); debouncedSave(val) }
 
   const handleAdd = async () => {
     if (!newGoal.trim()) return
