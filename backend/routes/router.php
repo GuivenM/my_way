@@ -44,21 +44,42 @@ $routes = [
     // Blocks — logs quotidiens (statuts done/skipped/partial/pending)
     'blocks'   => fn() => (new Controllers\BlockController)->dispatch($method, $id, $action, $body),
 
-    // Dashboard — snapshot agrégé (à venir)
-    'dashboard' => fn() => (new Controllers\DashboardController)->dispatch($method, $id, $action, $body),
+    // Dashboard — snapshot agrégé
+    'dashboard'  => fn() => (new Controllers\DashboardController)->dispatch($method, $id, $action, $body),
 
-    // Modules à venir
-    // 'projects'  => fn() => (new Controllers\ProjectController)->dispatch($method, $id, $action, $body),
-    // 'books'     => fn() => (new Controllers\BookController)->dispatch($method, $id, $action, $body),
-    // 'learning'  => fn() => (new Controllers\LearningController)->dispatch($method, $id, $action, $body),
-    // 'music'     => fn() => (new Controllers\MusicController)->dispatch($method, $id, $action, $body),
-    // 'finances'  => fn() => (new Controllers\FinanceController)->dispatch($method, $id, $action, $body),
-    // 'health'    => fn() => (new Controllers\HealthController)->dispatch($method, $id, $action, $body),
-    // 'spiritual' => fn() => (new Controllers\SpiritualController)->dispatch($method, $id, $action, $body),
-    // 'journal'   => fn() => (new Controllers\JournalController)->dispatch($method, $id, $action, $body),
-    // 'vision'    => fn() => (new Controllers\VisionController)->dispatch($method, $id, $action, $body),
-    // 'network'   => fn() => (new Controllers\NetworkController)->dispatch($method, $id, $action, $body),
-    // 'notes'     => fn() => (new Controllers\NoteController)->dispatch($method, $id, $action, $body),
+    // Projets + tâches + jalons
+    'projects'   => fn() => (new Controllers\ProjectController)->dispatch($method, $id, $action, $body),
+    'tasks'      => fn() => (new Controllers\ProjectController)->dispatch($method, $id, $action, $body),
+    'milestones' => fn() => (new Controllers\ProjectController)->dispatch($method, $id, $action, $body),
+
+    // Livres + citations
+    'books'  => fn() => (new Controllers\BookController)->dispatch($method, $id, $action, $body),
+    'quotes' => fn() => (new Controllers\BookController)->dispatch($method, $id, $action, $body),
+
+    // Santé
+    'health' => fn() => (new Controllers\HealthController)->dispatch($method, $id, $action, $body),
+
+    // Notes / Journal
+    'notes'     => fn() => (new Controllers\JournalController)->dispatch($method, $id, $action, $body),
+    'journal'   => fn() => (new Controllers\JournalController)->dispatch($method, $id, $action, $body),
+
+    // Apprentissage / Learning
+    'learning'  => fn() => (new Controllers\LearningController)->dispatch($method, $id, $action, $body),
+
+    // Musique
+    'music'     => fn() => (new Controllers\MusicController)->dispatch($method, $id, $action, $body),
+
+    // Finaces
+    'finances'  => fn() => (new Controllers\FinanceController)->dispatch($method, $id, $action, $body),
+
+    // Spiritualité
+    'spiritual' => fn() => (new Controllers\SpiritualController)->dispatch($method, $id, $action, $body),
+
+    // Vision / objectifs
+    'vision'    => fn() => (new Controllers\VisionController)->dispatch($method, $id, $action, $body),
+
+    // Réseau / contacts
+    'network'   => fn() => (new Controllers\NetworkController)->dispatch($method, $id, $action, $body),
 ];
 
 if (!$resource || !array_key_exists($resource, $routes)) {
