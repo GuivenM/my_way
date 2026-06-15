@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  /* Base */
+  --bg:        #ffffff;
+  --bg2:       rgba(245, 243, 255, 0.6);   /* card principale — violet très pâle, semi-transparent */
+  --bg3:       rgba(237, 234, 255, 0.5);   /* card imbriquée */
+  --bg4:       rgba(228, 224, 255, 0.4);   /* hover / pill */
+
+  /* Glassmorphism */
+  --glass-blur:   blur(16px);
+  --glass-border: 1px solid rgba(123, 111, 208, 0.12);
+  --glass-shadow: 0 4px 24px rgba(123, 111, 208, 0.08);
+
+  /* Texte */
+  --text:      #18181b;
+  --text2:     #52525b;
+  --muted:     #a1a1aa;
+
+  /* Accent violet */
+  --accent:    #7B6FD0;
+  --accent2:   #9d94df;
+  --accent-bg: rgba(123, 111, 208, 0.10);
+
+  /* Statuts */
+  --done:      #34d399;
+  --done-bg:   rgba(52, 211, 153, 0.12);
+  --skip:      #f87171;
+  --skip-bg:   rgba(248, 113, 113, 0.12);
+  --partial:   #fb923c;
+  --partial-bg:rgba(251, 146, 60, 0.12);
+  --active-bg: rgba(123, 111, 208, 0.15);
+
+  /* Projets dots */
+  --dot-purple: #7B6FD0;
+  --dot-teal:   #2dd4bf;
+  --dot-orange: #fb923c;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+/* Utilitaires glass */
+.glass {
+  background: var(--bg2);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-inner {
+  background: var(--bg3);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+}
+
+/* Safe area mobile */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
+.safe-top    { padding-top:    env(safe-area-inset-top, 0px); }
+
+/* Scrollbar discrète */
+::-webkit-scrollbar       { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(123,111,208,0.2); border-radius: 2px; }
