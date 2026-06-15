@@ -41,9 +41,7 @@ export const authApi = {
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
-export const dashboardApi = {
-  get: () => api.get('/dashboard'),
-}
+export const dashboardApi = () => api.get('/dashboard')
 
 // ── Schedule ──────────────────────────────────────────────────────────────────
 export const scheduleApi = {
