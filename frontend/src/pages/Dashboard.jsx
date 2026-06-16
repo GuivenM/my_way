@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { dashboardApi } from '../api'
 import { useAuth } from '../context/AuthContext'
 import { Moon, Dumbbell, Salad } from 'lucide-react'
+import { useNotifications } from '../hooks/useNotifications'
 
 /* ── Helpers ── */
 function Label({ children }) {
@@ -126,6 +127,7 @@ export default function Dashboard() {
   const { user } = useAuth()
   const [data, setData]     = useState(null)
   const [loading, setLoading] = useState(true)
+  useNotifications(data?.blocks ?? [])
 
   useEffect(() => {
     dashboardApi().then(setData).catch(console.error).finally(() => setLoading(false))

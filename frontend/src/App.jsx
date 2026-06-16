@@ -8,7 +8,7 @@ import Journal from './pages/Journal'
 import Vision from './pages/Vision'
 // import Projects from './pages/Projects'
 import Books from './pages/Books'
-// import Stats from './pages/Stats'
+import Stats from './pages/Stats'
 import More from './pages/More'
 
 function PrivateRoutes() {
@@ -33,8 +33,8 @@ function PrivateRoutes() {
         <Route path="/journal"  element={<Journal />} />
         <Route path="/vision"   element={<Vision />} />
         <Route path="/books"    element={<Books />} />
-        {/* {/* <Route path="/projects" element={<Projects />} />
-        <Route path="/stats"    element={<Stats />} /> */}
+        {/* {/* <Route path="/projects" element={<Projects />} />*/}
+        <Route path="/stats"    element={<Stats />} /> 
         <Route path="/more"     element={<More />} />
         <Route path="*"         element={<Navigate to="/" replace />} />
       </Routes>
