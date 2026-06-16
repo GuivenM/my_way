@@ -1,6 +1,9 @@
+// ── Composant à ajouter dans Schedule.jsx ─────────────────────────────────────
+// Remplace la section "export default function Schedule()" par celle-ci
+
 import { useEffect, useState } from 'react'
-import { blocksApi } from '../api'
-import { Check, Minus, X } from 'lucide-react'
+import { blocksApi, scheduleApi } from '../api'
+import { Check, Minus, X, Pencil, Save } from 'lucide-react'
 
 function Label({ children }) {
   return <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--accent)' }}>{children}</p>
@@ -24,7 +27,7 @@ function BlockCard({ block, onUpdate }) {
 
   return (
     <div className="glass rounded-xl p-4 transition-all"
-      style={{ border: block.is_current ? '1px solid rgba(123,111,208,0.35)' : undefined, padding: '16px', marginBottom: '12px' }}>
+      style={{ border: block.is_current ? '1px solid rgba(123,111,208,0.35)' : undefined, marginBottom: '12px' }}>
       <div className="flex items-start justify-between mb-3">
         <div>
           {block.is_current && (
@@ -80,64 +83,172 @@ function HistoryBar({ entry }) {
   )
 }
 
-export default function Schedule() {
-  const [blocks, setBlocks]   = useState([])
-  const [history, setHistory] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [tab, setTab]         = useState('today')
+// ── Éditeur de blocs ───────────────────────────────────────────────────────────
 
-  useEffect(() => {
-    Promise.all([blocksApi.today(), blocksApi.history(14)])
-      .then(([t, h]) => { setBlocks(t.blocks || []); setHistory(h.days || []) })
-      .catch(console.error).finally(() => setLoading(false))
-  }, [])
+function BlockEditor({ blocks, onSaved }) {
+  const [draft,   setDraft]   = useState(blocks.map(b => ({
+    id:          b.id ?? b.block_id,
+    name:        b.name,
+    description: b.description ?? '',
+    time_start:  b.time_start?.slice(0, 5),
+    time_end:    b.time_end?.slice(0, 5),
+    order_index: b.order_index,
+  })))
+  const [saving,  setSaving]  = useState(false)
+  const [saved,   setSaved]   = useState(false)
 
-const handleUpdate = async (blockId, status) => {
-  // Optimistic update
-  setBlocks(p => p.map(b => b.block_id === blockId ? { ...b, status } : b))
-
-  // Initialiser le jour si pas encore fait
-  const block = blocks.find(b => b.block_id === blockId)
-  if (!block.log_id) {
-    const fresh = await blocksApi.initDay()
-    setBlocks(fresh.blocks)
-    const log = fresh.blocks.find(b => b.block_id === blockId)
-    if (log?.log_id) await blocksApi.setStatus(log.log_id, status)
-  } else {
-    await blocksApi.setStatus(block.log_id, status)
+  const update = (index, field, value) => {
+    setDraft(d => d.map((b, i) => i === index ? { ...b, [field]: value } : b))
+    setSaved(false)
   }
-}
 
-  const done = blocks.filter(b => b.status === 'done').length
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      // Sauvegarder chaque bloc modifié individuellement
+      await Promise.all(draft.map(b =>
+        scheduleApi.update(b.id, {
+          name:        b.name,
+          description: b.description,
+          time_start:  b.time_start + ':00',
+          time_end:    b.time_end   + ':00',
+        })
+      ))
+      setSaved(true)
+      onSaved()
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
-    <div className="px-4 w-full max-w-lg mx-auto" style={{ padding: '16px' }}>
+    <div className="space-y-3">
+      <p className="text-xs" style={{ color: 'var(--muted)' }}>
+        Modifie les noms et horaires de tes blocs.
+      </p>
+
+      {draft.map((b, i) => (
+        <div key={b.id} className="glass rounded-xl p-4" style={{ marginBottom: '8px' }}>
+          {/* Numéro + nom */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
+              style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+              {b.order_index}
+            </span>
+            <input
+              value={b.name}
+              onChange={e => update(i, 'name', e.target.value)}
+              className="flex-1 px-3 py-1.5 rounded-xl text-sm font-semibold outline-none"
+              style={{ background: 'var(--bg3)', color: 'var(--text)', border: 'var(--glass-border)' }}
+            />
+          </div>
+
+          {/* Description */}
+          <input
+            value={b.description}
+            onChange={e => update(i, 'description', e.target.value)}
+            placeholder="Description (optionnel)"
+            className="w-full px-3 py-1.5 rounded-xl text-xs outline-none mb-3"
+            style={{ background: 'var(--bg3)', color: 'var(--text2)', border: 'var(--glass-border)' }}
+          />
+
+          {/* Horaires */}
+          <div className="flex gap-2 items-center">
+            <input
+              type="time"
+              value={b.time_start}
+              onChange={e => update(i, 'time_start', e.target.value)}
+              className="flex-1 px-3 py-1.5 rounded-xl text-sm outline-none text-center"
+              style={{ background: 'var(--bg3)', color: 'var(--text)', border: 'var(--glass-border)' }}
+            />
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>→</span>
+            <input
+              type="time"
+              value={b.time_end}
+              onChange={e => update(i, 'time_end', e.target.value)}
+              className="flex-1 px-3 py-1.5 rounded-xl text-sm outline-none text-center"
+              style={{ background: 'var(--bg3)', color: 'var(--text)', border: 'var(--glass-border)' }}
+            />
+          </div>
+        </div>
+      ))}
+
+      <button onClick={handleSave} disabled={saving}
+        className="w-full py-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition"
+        style={{
+          background: saved ? 'var(--done-bg)' : 'var(--accent)',
+          color:      saved ? 'var(--done)'    : 'white',
+          opacity:    saving ? 0.7 : 1,
+          boxShadow:  saved ? 'none' : '0 4px 16px rgba(123,111,208,0.3)',
+        }}>
+        {saving ? 'Sauvegarde…' : saved ? <><Check size={14} /> Sauvegardé</> : <><Save size={14} /> Sauvegarder</>}
+      </button>
+    </div>
+  )
+}
+
+// ── Page principale ────────────────────────────────────────────────────────────
+
+export default function Schedule() {
+  const [blocks,  setBlocks]  = useState([])
+  const [history, setHistory] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [tab,     setTab]     = useState('today')
+
+  const load = () => {
+    Promise.all([blocksApi.today(), blocksApi.history()])
+      .then(([t, h]) => { setBlocks(t.blocks || []); setHistory(h.days || []) })
+      .catch(console.error).finally(() => setLoading(false))
+  }
+
+  useEffect(() => { load() }, [])
+
+  const handleUpdate = async (blockId, status) => {
+    setBlocks(p => p.map(b => b.block_id === blockId ? { ...b, status } : b))
+    const block = blocks.find(b => b.block_id === blockId)
+    if (!block.log_id) {
+      const fresh = await blocksApi.initDay()
+      setBlocks(fresh.blocks)
+      const log = fresh.blocks.find(b => b.block_id === blockId)
+      if (log?.log_id) await blocksApi.setStatus(log.log_id, status)
+    } else {
+      await blocksApi.setStatus(block.log_id, status)
+    }
+  }
+
+  const done = blocks.filter(b => b.status === 'done').length
+  const TABS = [
+    { id: 'today',   label: "Aujourd'hui" },
+    { id: 'history', label: 'Historique'  },
+    { id: 'config',  label: 'Modifier'    },
+  ]
+
+  return (
+    <div className="px-4 w-full max-w-lg mx-auto" style={{ paddingTop: '24px', paddingBottom: '120px' }}>
       <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>Emploi du temps</h1>
-      <p className="text-sm" style={{ color: 'var(--muted)', marginBottom: '6px' }}>
+      <p className="text-sm mb-4" style={{ color: 'var(--muted)' }}>
         {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
       </p>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-5" style={{ marginBottom: '8px' }}>
-        {[{ id: 'today', label: "Aujourd'hui" }, { id: 'history', label: 'Historique' }].map(t => (
+      <div className="flex gap-2 mb-5">
+        {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className="px-4 py-5 rounded-sm text-sm font-semibold transition"
+            className="px-4 py-1.5 rounded-full text-sm font-semibold transition"
             style={{
               background: tab === t.id ? 'var(--accent)' : 'var(--bg2)',
               color:      tab === t.id ? 'white' : 'var(--muted)',
               boxShadow:  tab === t.id ? '0 4px 12px rgba(123,111,208,0.25)' : 'none',
               border:     'var(--glass-border)',
-              padding: '1.5px 4px',
             }}>
             {t.label}
           </button>
         ))}
       </div>
 
-      {tab === 'today' ? (
+      {tab === 'today' && (
         <>
-          {/* Barre de progression globale */}
-          <div className="glass rounded-xl p-4 mb-4 flex items-center gap-4" style={{ padding: '16px', marginBottom: '12px' }}>
+          <div className="glass rounded-xl p-4 mb-4 flex items-center gap-4">
             <div className="text-center">
               <p className="text-2xl font-bold" style={{ color: 'var(--accent)' }}>{done}</p>
               <p className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--muted)' }}>Faits</p>
@@ -153,23 +264,29 @@ const handleUpdate = async (blockId, status) => {
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div>
             {loading
               ? Array(7).fill(0).map((_, i) => (
-                  <div key={i} className="h-24 rounded-3xl animate-pulse" style={{ background: 'var(--bg2)' }} />
+                  <div key={i} className="h-24 rounded-3xl animate-pulse mb-3" style={{ background: 'var(--bg2)' }} />
                 ))
               : blocks.map(b => <BlockCard key={b.block_id} block={b} onUpdate={handleUpdate} />)
             }
           </div>
         </>
-      ) : (
-        <div className="glass rounded-xl p-4" style={{ padding: '16px' }}>
-          <Label>14 derniers jours</Label>
+      )}
+
+      {tab === 'history' && (
+        <div className="glass rounded-xl p-4">
+          <Label>30 derniers jours</Label>
           {history.length === 0
-            ? <p className="text-sm text-center py-6" style={{ color: 'var(--muted)', marginBottom: '12px' }}>Pas encore d'historique</p>
+            ? <p className="text-sm text-center py-6" style={{ color: 'var(--muted)' }}>Pas encore d'historique</p>
             : history.map(e => <HistoryBar key={e.log_date} entry={e} />)
           }
         </div>
+      )}
+
+      {tab === 'config' && blocks.length > 0 && (
+        <BlockEditor blocks={blocks} onSaved={() => { load(); setTab('today') }} />
       )}
     </div>
   )

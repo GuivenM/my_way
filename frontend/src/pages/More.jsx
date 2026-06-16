@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { BookOpen, Music2, Code2, Heart, Sparkles, ScrollText, TrendingUp, Users, ChevronRight } from 'lucide-react'
 
 const modules = [
-  { icon: ScrollText, label: 'Journal',           sub: 'Écriture quotidienne',  to: '/journal',  phase: 2, active: true },
-  { icon: TrendingUp, label: 'Vision & Objectifs', sub: '3 mois → 5 ans',       to: '/vision',   phase: 2, active: true },
-  { icon: Code2,      label: 'Apprentissage',      sub: 'Code, IA, réseau',      to: '/learning', phase: 5 },
-  { icon: Music2,     label: 'Musique / Zixe',     sub: 'Sessions & projets',    to: '/music',    phase: 5 },
-  { icon: Heart,      label: 'Santé',              sub: 'Sommeil, sport, alim.', to: '/health',   phase: 6 },
-  { icon: Sparkles,   label: 'Spiritualité',       sub: 'Pratiques & journal',   to: '/spiritual',phase: 6 },
-  { icon: Users,      label: 'Réseau',             sub: 'Contacts à entretenir', to: '/network',  phase: 7 },
+  { icon: ScrollText, label: 'Journal',           sub: 'Écriture quotidienne',   to: '/journal',  phase: 2, active: true },
+  { icon: TrendingUp, label: 'Vision & Objectifs', sub: '3 mois → 5 ans',        to: '/vision',   phase: 2, active: true },
+  { icon: Code2,      label: 'Apprentissage',      sub: 'Code, IA, réseau',      to: '/learning', phase: 2, active: true },
+  { icon: Music2,     label: 'Musique / Zixe',     sub: 'Sessions & projets',    to: '/music',    phase: 2, active: true },
+  { icon: Sparkles,   label: 'Spiritualité',       sub: 'Pratiques & journal',   to: '/spiritual',phase: 2, active: true },
+  { icon: Heart,      label: 'Santé',              sub: 'Sommeil, sport, alim.', to: '/health',   phase: 6},
+  { icon: Users,      label: 'Réseau',             sub: 'Contacts à entretenir', to: '/network',  phase: 7},
 ]
 
 function Label({ children }) {

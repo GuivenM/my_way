@@ -10,6 +10,9 @@ import Vision from './pages/Vision'
 import Books from './pages/Books'
 import Stats from './pages/Stats'
 import More from './pages/More'
+import Learning from './pages/Learning'
+import Spiritual from './pages/Spiritual'
+import Music from './pages/Music'
 
 function PrivateRoutes() {
   const { user, loading } = useAuth()
@@ -33,6 +36,9 @@ function PrivateRoutes() {
         <Route path="/journal"  element={<Journal />} />
         <Route path="/vision"   element={<Vision />} />
         <Route path="/books"    element={<Books />} />
+        <Route path="/learning"    element={<Learning />} />
+        <Route path="/spiritual"    element={<Spiritual />} />
+        <Route path="/music"    element={<Music />} />
         {/* {/* <Route path="/projects" element={<Projects />} />*/}
         <Route path="/stats"    element={<Stats />} /> 
         <Route path="/more"     element={<More />} />
