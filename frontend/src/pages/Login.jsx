@@ -17,7 +17,7 @@ export default function Login() {
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center px-6"
-      style={{ background: 'var(--bg)' }}>
+      style={{ background: 'var(--bg)', padding: '16px' }}>
 
       {/* Orbe décorative en arrière-plan */}
       <div style={{
@@ -31,7 +31,7 @@ export default function Login() {
         {/* Logo */}
         <div className="mb-10 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4"
-            style={{ background: 'var(--accent)', boxShadow: '0 8px 24px rgba(123,111,208,0.35)' }}>
+            style={{ background: 'var(--accent)', boxShadow: '0 8px 24px rgba(123,111,208,0.35)', }}>
             <span className="text-white text-xl font-bold tracking-tight">OS</span>
           </div>
           <h1 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>Personal OS</h1>
@@ -39,18 +39,21 @@ export default function Login() {
         </div>
 
         {/* Card */}
-        <div className="glass rounded-3xl p-6 space-y-4">
+        <div className="glass rounded-xl p-6 space-y-4" style={{padding: '24px 16px', margin: '8px 0'}}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold mb-2 uppercase tracking-wide"
                 style={{ color: 'var(--muted)' }}>Identifiant</label>
               <input type="text" value={form.username}
                 onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
-                className="w-full px-4 py-3 rounded-2xl text-sm outline-none transition"
+                className="w-full px-4 py-3 rounded-xl text-sm outline-none transition"
                 style={{
                   background: 'rgba(255,255,255,0.8)',
                   border: '1px solid rgba(123,111,208,0.15)',
                   color: 'var(--text)',
+                  margin: '4px 0',
+                  height: '32px',
+                  padding: '8px 12px',
                 }}
                 placeholder="ton_identifiant" required />
             </div>
@@ -59,11 +62,14 @@ export default function Login() {
                 style={{ color: 'var(--muted)' }}>Mot de passe</label>
               <input type="password" value={form.password}
                 onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                className="w-full px-4 py-3 rounded-2xl text-sm outline-none"
+                className="w-full px-4 py-3 rounded-xl text-sm outline-none"
                 style={{
                   background: 'rgba(255,255,255,0.8)',
                   border: '1px solid rgba(123,111,208,0.15)',
                   color: 'var(--text)',
+                  margin: '4px',
+                  height: '32px',
+                  padding: '8px 12px',
                 }}
                 placeholder="••••••••" required />
             </div>
@@ -80,6 +86,9 @@ export default function Login() {
                 color: 'white',
                 opacity: loading ? 0.7 : 1,
                 boxShadow: '0 4px 16px rgba(123,111,208,0.30)',
+                  margin: '4px',
+                  height: '32px',
+                  padding: '8px 12px',
               }}>
               {loading ? 'Connexion…' : 'Entrer'}
             </button>
