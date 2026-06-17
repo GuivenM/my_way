@@ -143,35 +143,33 @@ class DashboardController
         // Caster en bool pour le front
         $health = array_map(fn($v) => (bool)$v, $health);
 
-        // ── 7. Citation aléatoire depuis les livres ────────────────────────
         // ── 7. Citation ───────────────────────────────────────────────────────
-        // D'abord depuis tes livres, sinon ZenQuotes
-        $stmt = $db->prepare(
-            'SELECT q.content AS text, b.title AS source
-     FROM m_w_book_quotes q
-     JOIN m_w_books b ON b.id = q.book_id
-     WHERE q.user_id = ?
-     ORDER BY RAND()
-     LIMIT 1'
-        );
-        $stmt->execute([$uid]);
-        $quote = $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        $quote = null;
+        $usePersonal = $nowH >= 18 || $nowH < 6; // Soir/nuit → tes citations
 
-        // Fallback ZenQuotes si pas de citation en base
+        if ($usePersonal) {
+            $stmt = $db->prepare(
+                'SELECT q.content AS text, b.title AS source
+         FROM m_w_book_quotes q
+         JOIN m_w_books b ON b.id = q.book_id
+         WHERE q.user_id = ?
+         ORDER BY RAND() LIMIT 1'
+            );
+            $stmt->execute([$uid]);
+            $quote = $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        }
+
+        // Matin/après-midi → ZenQuotes (ou fallback si pas de citation perso le soir)
         if (!$quote) {
             try {
                 $raw = @file_get_contents('https://zenquotes.io/api/random');
                 if ($raw) {
                     $data = json_decode($raw, true);
                     if (!empty($data[0]['q'])) {
-                        $quote = [
-                            'text'   => $data[0]['q'],
-                            'source' => $data[0]['a'],
-                        ];
+                        $quote = ['text' => $data[0]['q'], 'source' => $data[0]['a']];
                     }
                 }
             } catch (\Exception $e) {
-                // silencieux
             }
         }
 
