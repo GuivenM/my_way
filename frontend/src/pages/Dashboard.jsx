@@ -36,7 +36,7 @@ function ActiveBlock({ block }) {
         </div>
         <div className="flex-1">
           <p className="text-base font-semibold" style={{ color: 'var(--text)' }}>{block.name}</p>
-          <p className="text-xs" style={{ color: 'var(--muted)' }}>{block.time_start?.slice(0,5)} – {block.time_end?.slice(0,5)}</p>
+          <p className="text-xs" style={{ color: 'var(--muted)' }}>{block.time_start?.slice(0, 5)} – {block.time_end?.slice(0, 5)}</p>
         </div>
         <span className="text-xs font-semibold px-3 py-1 rounded-lg"
           style={{ background: 'var(--accent-bg)', color: 'var(--accent)', padding: '4px 12px' }}>En cours</span>
@@ -48,7 +48,7 @@ function ActiveBlock({ block }) {
 /* ── Blocs du jour (mini carrés) ── */
 function BlocksTimeline({ blocks }) {
   const statusColor = {
-    done:    'var(--accent)',
+    done: 'var(--accent)',
     skipped: 'rgba(161,161,170,0.3)',
     partial: 'var(--partial)',
     pending: 'rgba(161,161,170,0.15)',
@@ -70,7 +70,7 @@ function BlocksTimeline({ blocks }) {
               )}
             </div>
             <span className="text-[9px]" style={{ color: 'var(--muted)' }}>
-              {b.time_start?.slice(0,2)}h
+              {b.time_start?.slice(0, 2)}h
             </span>
           </div>
         ))}
@@ -82,12 +82,12 @@ function BlocksTimeline({ blocks }) {
 /* ── Projets ── */
 const DOMAIN_COLORS = {
   'web-novel': 'var(--dot-purple)',
-  'dev':       'var(--dot-teal)',
-  'music':     'var(--dot-orange)',
+  'dev': 'var(--dot-teal)',
+  'music': 'var(--dot-orange)',
 }
 function ProjectRow({ project }) {
   const color = DOMAIN_COLORS[project.domain] || 'var(--accent)'
-  const pct   = project.progress ?? 40
+  const pct = project.progress ?? 40
   const statusLabel = { active: 'Actif', paused: 'En pause', idea: 'Idée', done: 'Terminé' }
 
   return (
@@ -125,22 +125,43 @@ function HealthBtn({ icon: Icon, label, active, color }) {
 /* ── Dashboard ── */
 export default function Dashboard() {
   const { user } = useAuth()
-  const [data, setData]     = useState(null)
+  const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   useNotifications(data?.blocks ?? [])
 
+  // ✅ Afficher un état d'erreur
+  const [error, setError] = useState(null)
+
   useEffect(() => {
-    dashboardApi().then(setData).catch(console.error).finally(() => setLoading(false))
+    dashboardApi()
+      .then(setData)
+      .catch(err => {
+        console.error(err)
+        setError(err)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
-  const now  = new Date()
+  // Dans le JSX, avant le return principal :
+  if (error) return (
+    <div className="flex flex-col items-center justify-center h-64 gap-3">
+      <p style={{ color: 'var(--muted)' }}>Impossible de charger le dashboard</p>
+      <button onClick={() => window.location.reload()}
+        className="text-sm px-4 py-2 rounded-xl"
+        style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+        Réessayer
+      </button>
+    </div>
+  )
+
+  const now = new Date()
   const hour = now.getHours()
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
-  const dateStr  = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
     .toUpperCase()
 
   const activeBlock = data?.blocks?.find(b => b.is_current)
-  const blocksDone  = data?.blocks_done ?? 0
+  const blocksDone = data?.blocks_done ?? 0
   const blocksTotal = data?.blocks_total ?? 7
 
   return (
@@ -203,9 +224,9 @@ export default function Dashboard() {
       <div className="glass rounded-3xl" style={{ padding: '16px' }}>
         <Label>Santé aujourd'hui</Label>
         <div className="flex gap-2">
-          <HealthBtn icon={Moon}     label="Sommeil" active={data?.health?.sleep_ok}    color="#7B6FD0" />
-          <HealthBtn icon={Dumbbell} label="Sport"   active={data?.health?.exercise_ok} color="var(--partial)" />
-          <HealthBtn icon={Salad}    label="Alim."   active={data?.health?.food_ok}     color="var(--done)" />
+          <HealthBtn icon={Moon} label="Sommeil" active={data?.health?.sleep_ok} color="#7B6FD0" />
+          <HealthBtn icon={Dumbbell} label="Sport" active={data?.health?.exercise_ok} color="var(--partial)" />
+          <HealthBtn icon={Salad} label="Alim." active={data?.health?.food_ok} color="var(--done)" />
         </div>
       </div>
 

@@ -37,6 +37,25 @@ class DashboardController
         };
     }
 
+    private function fetchZenQuote(): ?array
+    {
+        $ch = curl_init('https://zenquotes.io/api/random');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 2,      // ← Max 2 secondes
+            CURLOPT_CONNECTTIMEOUT => 1,
+        ]);
+        $raw = curl_exec($ch);
+        $err = curl_errno($ch);
+        unset($ch);
+
+        if ($err || !$raw) return null;
+        $data = json_decode($raw, true);
+        return !empty($data[0]['q'])
+            ? ['text' => $data[0]['q'], 'source' => $data[0]['a']]
+            : null;
+    }
+
     // ------------------------------------------------------------------ //
     // GET /api/dashboard
     // ------------------------------------------------------------------ //
@@ -101,26 +120,30 @@ class DashboardController
         $projects = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         // Compter toutes les tâches pour une progression approximative
-        foreach ($projects as &$p) {
-            $s = $db->prepare(
-                'SELECT
-                    COUNT(*) AS total,
-                    SUM(status = "done") AS done
-                 FROM m_w_tasks WHERE project_id = ?'
-            );
-            $s->execute([$p['id']]);
-            $counts = $s->fetch(\PDO::FETCH_ASSOC);
-            $total  = (int)$counts['total'];
-            $done   = (int)$counts['done'];
-            $p['progress'] = $total > 0 ? (int)round(($done / $total) * 100) : 0;
-        }
-        unset($p);
+        $stmt = $db->prepare(
+            'SELECT p.id, p.name, p.domain, p.status,
+            COUNT(t.id)            AS total_tasks,
+            SUM(t.status = "done") AS done_tasks
+            FROM m_w_projects p
+            LEFT JOIN m_w_tasks t ON t.project_id = p.id
+            WHERE p.user_id = ? AND p.status IN ("active", "paused")
+            GROUP BY p.id
+            ORDER BY p.status = "active" DESC, p.updated_at DESC
+            LIMIT 5'
+        );
+        $stmt->execute([$uid]);
+        $projects = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        $projectsCount = (int)$db->prepare(
-            'SELECT COUNT(*) FROM m_w_projects WHERE user_id = ? AND status = "active"'
-        )->execute([$uid]) ? $db->query(
-            "SELECT COUNT(*) FROM m_w_projects WHERE user_id = $uid AND status = 'active'"
-        )->fetchColumn() : 0;
+        foreach ($projects as &$p) {
+            $total = (int)$p['total_tasks'];
+            $done  = (int)$p['done_tasks'];
+            $p['progress'] = $total > 0 ? (int)round(($done / $total) * 100) : 0;
+            unset($p['total_tasks'], $p['done_tasks']);
+        }
+
+        $stmt = $db->prepare('SELECT COUNT(*) FROM m_w_projects WHERE user_id = ? AND status = "active"');
+        $stmt->execute([$uid]);
+        $projectsCount = (int)$stmt->fetchColumn();
 
         // ── 5. Livres en cours / terminés ─────────────────────────────────
         $stmt = $db->prepare(
@@ -144,10 +167,9 @@ class DashboardController
         $health = array_map(fn($v) => (bool)$v, $health);
 
         // ── 7. Citation ───────────────────────────────────────────────────────
-        $quote = null;
-        $usePersonal = $nowH >= 18 || $nowH < 6; // Soir/nuit → tes citations
-
-        if ($usePersonal) {
+       $usePersonal = $nowH % 2;
+        // Alterner entre citation perso et externe selon l'heure (pour varier les plaisirs)
+        if (!$usePersonal) {
             $stmt = $db->prepare(
                 'SELECT q.content AS text, b.title AS source
          FROM m_w_book_quotes q
@@ -158,15 +180,26 @@ class DashboardController
             $stmt->execute([$uid]);
             $quote = $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
         }
-
-        // Matin/après-midi → ZenQuotes (ou fallback si pas de citation perso le soir)
-        if (!$quote) {
+ 
+        if ($quote) {
             try {
                 $raw = @file_get_contents('https://zenquotes.io/api/random');
                 if ($raw) {
                     $data = json_decode($raw, true);
                     if (!empty($data[0]['q'])) {
                         $quote = ['text' => $data[0]['q'], 'source' => $data[0]['a']];
+                    }
+                    // Si la requête externe échoue, on cherche une citation perso en dernier recours
+                    if (!$quote) {
+                        $stmt = $db->prepare(
+                            'SELECT q.content AS text, b.title AS source
+                             FROM m_w_book_quotes q
+                             JOIN m_w_books b ON b.id = q.book_id
+                             WHERE q.user_id = ?
+                             ORDER BY RAND() LIMIT 1'
+                        );
+                        $stmt->execute([$uid]);
+                        $quote = $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
                     }
                 }
             } catch (\Exception $e) {
